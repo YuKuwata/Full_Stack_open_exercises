@@ -4,9 +4,13 @@ import { some } from 'lodash-es'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    {
+      name: 'Arto Hellas',
+      number: '040-1234567'
+    }
   ])
-  const [newName, setNewName] = useState('')
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
 
   return (
     <div>
@@ -14,6 +18,9 @@ const App = () => {
       <form>
         <div>
           name: <input onChange={(event) => setNewName(event.target.value)} />
+        </div>
+        <div>
+          number: <input onChange={(event) => setNewNumber(event.target.value)} />
         </div>
         <div>
           <button
@@ -24,7 +31,7 @@ const App = () => {
                 alert(`${newName} is already added to phonebook`);
                 return;
               }
-              setPersons([...persons, { name: newName }])
+              setPersons([...persons, { name: newName, number: newNumber }])
             }}
           >
             add
@@ -33,7 +40,7 @@ const App = () => {
       </form >
       <h2>Numbers</h2>
       {
-        persons.map((person) => <div key={person.name}>{person.name}</div>)
+        persons.map((person) => <div key={person.name}>{person.name}&nbsp;{person.number}</div>)
       }
     </div >
   )
