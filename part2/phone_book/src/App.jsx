@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
-import { some } from 'lodash-es'
+import Filter from './Filter';
+import PersonForm from './PersonForm';
+import Persons from './Persons';
+import { some } from 'lodash-es';
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -16,42 +19,17 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with
-        <input onChange={(event) => {
-          if (!event.target.value) {
-            setShownPersons(persons);
-          }
-          setShownPersons(persons.filter(person => person.name.toUpperCase().includes(event.target.value.toUpperCase())))
-        }} />
-      </div>
-      <form>
-        <div>
-          name: <input onChange={(event) => setNewName(event.target.value)} />
-        </div>
-        <div>
-          number: <input onChange={(event) => setNewNumber(event.target.value)} />
-        </div>
-        <div>
-          <button
-            type="submit"
-            onClick={(event) => {
-              event.preventDefault();
-              if (some(persons, person => person?.name === newName)) {
-                alert(`${newName} is already added to phonebook`);
-                return;
-              }
-              setPersons([...persons, { name: newName, number: newNumber }])
-            }}
-          >
-            add
-          </button>
-        </div>
-      </form >
+      <Filter persons={persons} setShownPersons={setShownPersons} />
+      <PersonForm
+        setNewName={setNewName}
+        setNewNumber={setNewNumber}
+        persons={persons}
+        newName={newName}
+        setPersons={setPersons}
+        newNumber={newNumber}
+      />
       <h2>Numbers</h2>
-      {
-        shownPersons.map((person) => <div key={person.name}>{person.name}&nbsp;{person.number}</div>)
-      }
+      <Persons shownPersons={shownPersons} />
     </div >
   )
 }
