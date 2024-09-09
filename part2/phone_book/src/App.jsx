@@ -18,7 +18,7 @@ const App = () => {
         setPersons(data);
       }).catch((err) => {
         console.log(err);
-      })
+      });
   }, [])
 
   return (
