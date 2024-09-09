@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import axios from 'axios';
 import { some } from 'lodash-es';
+import services from './services';
 export default function PersonForm(props) {
     const { setNewName, setNewNumber, persons, newName, setPersons, newNumber } = props;
     const handleSubmit = async (event) => {
@@ -10,10 +10,10 @@ export default function PersonForm(props) {
                 alert(`${newName} is already added to phonebook`);
                 return;
             }
-            const postRes = await axios.post('http://localhost:3001/persons', { name: newName, number: newNumber });
+            const postRes = await services.create({ name: newName, number: newNumber });
             const { status, statusText } = postRes;
             if (status === 201 && statusText === 'Created') {
-                const getRes = await axios.get('http://localhost:3001/persons');
+                const getRes = await services.getAll();
                 setPersons(getRes.data);
             }
         } catch (error) {
