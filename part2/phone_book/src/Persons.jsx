@@ -20,7 +20,9 @@ export default function Persons(props) {
         shownPersons.map((person) => (
             <div key={person.id}>
                 {person.name}
+                &nbsp;
                 {person.number}
+                &nbsp;
                 <button
                     onClick={handleDelete(person)}
                 >
