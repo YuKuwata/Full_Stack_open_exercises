@@ -2,7 +2,7 @@
 import { find, isEmpty } from 'lodash-es';
 import services from './services';
 export default function PersonForm(props) {
-    const { setNewName, setNewNumber, persons, newName, setPersons, newNumber } = props;
+    const { setNewName, setNewNumber, persons, newName, setPersons, newNumber, setErrorMessage } = props;
     const handleSubmit = async (event) => {
         try {
             event.preventDefault();
@@ -17,6 +17,8 @@ export default function PersonForm(props) {
                 if (status === 200 && statusText === 'OK') {
                     const getAllRes = await services.getAll();
                     setPersons(getAllRes.data);
+                    setErrorMessage(`Updated ${newName}`);
+                    setTimeout(() => { setErrorMessage(null) }, 3000);
                 }
             } else {
                 const postRes = await services.create({ name: newName, number: newNumber });
@@ -24,6 +26,8 @@ export default function PersonForm(props) {
                 if (status === 201 && statusText === 'Created') {
                     const getRes = await services.getAll();
                     setPersons(getRes.data);
+                    setErrorMessage(`Added ${newName}`);
+                    setTimeout(() => { setErrorMessage(null) }, 3000);
                 }
             }
         } catch (error) {
