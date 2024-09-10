@@ -31,6 +31,11 @@ export default function PersonForm(props) {
                 }
             }
         } catch (error) {
+            const { response: { status } } = error;
+            if (status === 404) {
+                setErrorMessage(`Information of ${newName} has already been removed from server`);
+                setTimeout(() => { setErrorMessage(null) }, 3000);
+            }
             console.log(error);
         }
     }
