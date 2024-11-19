@@ -1,20 +1,21 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { findAllCountries } from './services';
 import { filter, includes, lowerCase, map } from 'lodash-es';
 
 const App = () => {
   const [countries, setCountries] = useState([]);
 
-  const findCountries = () => {
+  const findCountries = (v) => {
     findAllCountries()
       .then((res) => {
-        const shownCountries = filter(res?.data, (country) => includes(lowerCase(country?.name?.common), lowerCase(e?.target?.value)) || includes(lowerCase(country?.name?.official), lowerCase(e?.target?.value)));
+        const shownCountries = filter(res?.data, (country) => includes(lowerCase(country?.name?.common), lowerCase(v)) || includes(lowerCase(country?.name?.official), lowerCase(v)));
         setCountries(shownCountries);
       })
       .catch((err) => {
         setCountries([]);
       });
+
   }
 
   // const debounce = (func, delay, params) => {
@@ -29,14 +30,11 @@ const App = () => {
   //   }
   // }
 
-  const throttle = (func, delay, params) => {
+  const throttle = (func, delay) => {
     let available = true;
-    return () => {
-      console.log('available', available)
-      debugger;
+    return (v) => {
       if (available) {
-        debugger;
-        func(params);
+        func(v);
         available = false;
         setTimeout(() => {
           available = true;
@@ -47,9 +45,46 @@ const App = () => {
   }
 
 
-
   // const handleChange = debounce(findCountries, 300);
-  const handleChange = throttle(findCountries, 10000);
+  const handleChange = useRef(throttle(findCountries, 1000));
+  // const handleChange = throttle(findCountries, 3000);
+
+  const renderCountries = (countries) => {
+    if (countries.length <= 10) {
+      if (countries.length === 1) {
+        const singleCountry = countries[0];
+        return (
+          <div>
+            <h1>
+              {singleCountry.name.common}
+            </h1>
+            <section>
+              <div>
+                {map(singleCountry.capital, (value) => <span>{value}</span>)}
+              </div>
+              <div>
+                {singleCountry.area}
+              </div>
+            </section>
+            <section>
+              <h3>languages:</h3>
+              <ul>
+                {
+                  map(Object.keys(singleCountry.languages), (key) => <li>{singleCountry.languages[key]}</li>)
+                }
+              </ul>
+            </section>
+          </div>
+        )
+      }
+      return (map(countries, (country) => (
+        <div>
+          {country?.name?.common}
+        </div>
+      )))
+    }
+    return 'Too many matches,specify another fiter'
+  }
 
   return (
     <div>
@@ -63,19 +98,12 @@ const App = () => {
               setCountries([]);
               return;
             }
-            handleChange();
+            handleChange.current(e.target.value);
           }}
         />
       </div>
       {
-        countries.length <= 10 ?
-          map(countries, (country) => (
-            <div>
-              {country?.name?.common}
-            </div>
-          ))
-          :
-          'Too many matches,specify another fiter'
+        renderCountries(countries)
       }
     </div >
   )
