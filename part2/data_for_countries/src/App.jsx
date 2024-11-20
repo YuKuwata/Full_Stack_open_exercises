@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { useState, useRef } from 'react';
-import { findAllCountries } from './services';
-import { filter, includes, lowerCase, map } from 'lodash-es';
+import { findAllCountries, findSingleCountry } from './services';
+import { filter, includes, lowerCase, map, isEmpty } from 'lodash-es';
 
 const App = () => {
   const [countries, setCountries] = useState([]);
+  const [singleCountry, setSingleCountry] = useState({});
 
   const findCountries = (v) => {
     findAllCountries()
@@ -80,6 +81,19 @@ const App = () => {
       return (map(countries, (country) => (
         <div>
           {country?.name?.common}
+          <button
+            onClick={() => {
+              findSingleCountry(country?.name?.common)
+                .then((res) => {
+                  setSingleCountry(res.data);
+                })
+                .catch((err) => {
+
+                })
+            }}
+          >
+            show
+          </button>
         </div>
       )))
     }
@@ -104,6 +118,31 @@ const App = () => {
       </div>
       {
         renderCountries(countries)
+      }
+      {
+        !isEmpty(singleCountry) ?
+          <div>
+            <h1>
+              {singleCountry.name.common}
+            </h1>
+            <section>
+              <div>
+                {map(singleCountry.capital, (value) => <span>{value}</span>)}
+              </div>
+              <div>
+                {singleCountry.area}
+              </div>
+            </section>
+            <section>
+              <h3>languages:</h3>
+              <ul>
+                {
+                  map(Object.keys(singleCountry.languages), (key) => <li>{singleCountry.languages[key]}</li>)
+                }
+              </ul>
+            </section>
+          </div>
+          : null
       }
     </div >
   )
