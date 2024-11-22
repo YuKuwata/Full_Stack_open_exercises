@@ -9,3 +9,7 @@ export const findAllCountries = async () => {
 export const findSingleCountry = async (country) => {
     return axios.get(`${baseUrl}/name/${country}`);
 }
+
+export const queryWeatherByCity = async (city) => {
+    return axios.get(`https://samples.openweathermap.org/data/2.5/find?q=${city}`);
+}

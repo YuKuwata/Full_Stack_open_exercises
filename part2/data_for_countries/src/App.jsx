@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { useState, useRef } from 'react';
-import { findAllCountries, findSingleCountry } from './services';
+import { findAllCountries, findSingleCountry, queryWeatherByCity } from './services';
 import { filter, includes, lowerCase, map, isEmpty } from 'lodash-es';
 
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [singleCountry, setSingleCountry] = useState({});
+  const [captitalWeather, setCapitalWeather] = useState({});
 
   const findCountries = (v) => {
     findAllCountries()
@@ -50,33 +51,38 @@ const App = () => {
   const handleChange = useRef(throttle(findCountries, 1000));
   // const handleChange = throttle(findCountries, 3000);
 
+  const renderSingleCountry = (country) => (
+    <div>
+      <h1>
+        {country.name.common}
+      </h1>
+      <section>
+        <div>
+          {map(country.capital, (value) => <span>{value}</span>)}
+        </div>
+        <div>
+          {country.area}
+        </div>
+      </section>
+      <section>
+        <h3>languages:</h3>
+        <ul>
+          {
+            map(Object.keys(country.languages), (key) => <li>{country.languages[key]}</li>)
+          }
+        </ul>
+      </section>
+      <section>
+        <img src={country.flags.png} alt="" />
+      </section>
+    </div>
+  )
+
   const renderCountries = (countries) => {
     if (countries.length <= 10) {
       if (countries.length === 1) {
         const singleCountry = countries[0];
-        return (
-          <div>
-            <h1>
-              {singleCountry.name.common}
-            </h1>
-            <section>
-              <div>
-                {map(singleCountry.capital, (value) => <span>{value}</span>)}
-              </div>
-              <div>
-                {singleCountry.area}
-              </div>
-            </section>
-            <section>
-              <h3>languages:</h3>
-              <ul>
-                {
-                  map(Object.keys(singleCountry.languages), (key) => <li>{singleCountry.languages[key]}</li>)
-                }
-              </ul>
-            </section>
-          </div>
-        )
+        return renderSingleCountry(singleCountry);
       }
       return (map(countries, (country) => (
         <div>
@@ -86,6 +92,11 @@ const App = () => {
               findSingleCountry(country?.name?.common)
                 .then((res) => {
                   setSingleCountry(res.data);
+                  const captitalCity = res.data.capital[0];
+                  queryWeatherByCity(captitalCity)
+                    .then((res) => {
+                      
+                    })
                 })
                 .catch((err) => {
 
@@ -121,27 +132,7 @@ const App = () => {
       }
       {
         !isEmpty(singleCountry) ?
-          <div>
-            <h1>
-              {singleCountry.name.common}
-            </h1>
-            <section>
-              <div>
-                {map(singleCountry.capital, (value) => <span>{value}</span>)}
-              </div>
-              <div>
-                {singleCountry.area}
-              </div>
-            </section>
-            <section>
-              <h3>languages:</h3>
-              <ul>
-                {
-                  map(Object.keys(singleCountry.languages), (key) => <li>{singleCountry.languages[key]}</li>)
-                }
-              </ul>
-            </section>
-          </div>
+          renderSingleCountry(singleCountry)
           : null
       }
     </div >
